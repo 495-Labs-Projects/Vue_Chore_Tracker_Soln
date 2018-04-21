@@ -1,0 +1,20 @@
+  <!-- Form template using Vue for adding and editing chores -->
+  <%= form_for(@chore) do |f| %>
+
+    <div class="field">
+      <%= f.label :child_id %><br />
+      <%= f.collection_select :child_id, Child.alphabetical.active.all, :id, :name, {:prompt => "Select child..."}, "v-model.number" => "child_id" %>
+    </div>
+    <div class="field">
+      <%= f.label :task_id %><br />
+      <%= f.collection_select :task_id, Task.alphabetical.active.all, :id, :name, {:prompt => "Select task..."}, "v-model.number" => "task_id" %>
+    </div>
+
+    <p>Date: <input type="date" id="" v-model="due_on"></p>
+
+    <div class="field">
+      <%= f.label :completed %><br />
+      <%= f.check_box :completed, "v-model.completed" => "completed" %>
+    </div>
+  <% end %>
+      <button v-on:click="submitForm()">Submit</button>

@@ -1,25 +1,85 @@
 <h2>Listing chores</h2>
 
-<table>
-  <tr>
-    <th width="125" align="left">Child</th>
-    <th width="200" align="left">Task</th>
-    <th width="75">Due on</th>
-    <th width="125">Completed</th>
-    <th></th>
-  </tr>
+<div id="chores_list">
+  <table>
+    <tr>
+      <th width="125" align="left">Child</th>
+      <th width="200" align="left">Task</th>
+      <th width="75">Due on</th>
+      <th width="125">Completed</th>
+      <th></th>
+    </tr>
 
-<% @chores.each do |chore| %>
-  <tr>
-    <td><%= chore.child_id %></td>
-    <td><%= chore.task_id %></td>
-    <td align="center"><%= chore.due_on %></td>
-    <td align="center"><%= chore.completed %></td>
-    <td><%= link_to 'Edit', edit_chore_path(chore) %></td>
+<!-- 
+  Template for creating a table row display
+  v-for iterates over values in the Vue instance
+  v-bind binds props to be sent to components 
+-->
+  <tr is='chore-row' 
+      v-for="chore in chores" 
+      v-bind:chore="chore" 
+      v-bind:name="find_child_name(chore)" 
+      v-bind:task='find_task_name(chore)'>  
   </tr>
-<% end %>
-</table>
+  </table>
+
+  <button v-on:click="switch_modal()">Add Chore</button>
+
+  <div v-if="Object.keys(errors).length > 0">
+    <h1>Errors</h1>
+    <table>
+      <tr>
+        <th width="125" align="left">Field</th>
+        <th width="200" align="left">Problem</th>
+      </tr>
+
+    
+<!--         Template for creating a table row display
+      v-for iterates over values in the Vue instance
+      v-bind binds props to be sent to components  -->
+   
+      <tr is='error-row' 
+          v-for="(msg, error) in errors"
+          v-bind:error="error" 
+          v-bind:msg="msg">  
+      </tr>
+    </table>
+  </div>
+
+  <div v-if="modal_open">
+    <h3>New Chore</h3>
+    <new-chore-form></new-chore-form>
+  </div>
+</div>
 
 <br>
 
-<%= link_to 'New Chore', new_chore_path %>
+  <!-- v-on:click binds a function to a clicking action -->
+
+<!-- Defining Vue templates to work with components -->
+<script type="text/x-template" id="chore-row">
+    <tr>
+      <td>{{ name }}</td>
+      <td>{{ task }}</td>
+      <td>{{ chore.due_on }}</td>
+      <td>{{ chore.completed }}</td>
+      <td v-on:click="toggle_complete(chore)">Check</td>
+      <td v-on:click="switch_edit_modal(chore)">Edit</td>
+      <td v-on:click="remove_record(chore)">Delete</td>
+    </tr>
+</script>
+
+<script type="text/x-template" id="error-row">
+    <tr>
+      <td>{{ error }}</td>
+      <td>{{ msg }}</td>
+    </tr>
+</script>
+
+<!-- Component to add a new form -->
+<script type="text/x-template" id="new-chore-form">
+  <div>
+  <% @chore = Chore.new() %>
+  <%= render 'vue_form' %>
+  </div>
+</script>
